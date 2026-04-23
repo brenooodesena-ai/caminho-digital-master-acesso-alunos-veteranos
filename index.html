@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Área de Membros</title>
+    <!-- Favicon / Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS reset and fonts */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            /* Very dark almost black background based on the image */
+            background-color: #0c0c0e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Top Progress Bar indicator */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: #27272a;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            width: 15%;
+            height: 100%;
+            background-color: #eab308; /* Premium gold */
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+            border-radius: 0 2px 2px 0;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Header Logo */
+        header {
+            margin-top: 48px;
+            margin-bottom: 32px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .logo {
+            display: none;
+        }
+
+        /* Main Content Container */
+        main {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #a16207 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            max-width: 700px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #a1a1aa; /* Light gray text */
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Video / VSL Section */
+        .video-container {
+            width: 100%;
+            max-width: 720px;
+            aspect-ratio: 16/9;
+            background-color: #18181b;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 32px;
+            border: 1px solid #27272a; /* Subtle border */
+        }
+
+        /* Mockup elements mimicking a video player */
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #27272a 0%, #09090b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .video-overlay:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        .play-button {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #fcd34d, #eab308); /* Golden gradient */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .play-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #fde047, #ca8a04);
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-top: 16px solid transparent;
+            border-bottom: 16px solid transparent;
+            border-left: 26px solid white;
+            margin-left: 6px; /* Offset to center the triangle optically */
+        }
+        
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.5), transparent);
+        }
+        
+        .control-icon {
+            color: white;
+            opacity: 0.85;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .control-icon:hover {
+            opacity: 1;
+        }
+        
+        .control-time {
+            font-size: 14px;
+            opacity: 0.9;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .progress-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 25%;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .pre-button-text {
+            font-size: 15px;
+            color: #d4d4d8;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            max-width: 480px;
+            padding: 18px 24px;
+            border-radius: 12px;
+            border: 2px solid #27272a;
+            background-color: #18181b;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .form-input::placeholder {
+            color: #a1a1aa;
+        }
+
+        .form-input:focus {
+            border-color: #eab308;
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.15);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #fcd34d 0%, #eab308 50%, #ca8a04 100%);
+            color: #291501; /* Very dark rich brown */
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+            padding: 20px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(234, 179, 8, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+            transition: all 0.3s cubic-bezier(0.25, 1.5, 0.5, 1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+        }
+        
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: skewX(-25deg);
+            animation: shine 4s infinite;
+            z-index: -1;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(234, 179, 8, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .cta-button:active {
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(234, 179, 8, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: 40px 0 24px 0;
+            text-align: center;
+            font-size: 13px;
+            color: #52525b;
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 26px;
+            }
+            .video-container {
+                border-radius: 12px;
+            }
+            .play-button {
+                width: 70px;
+                height: 70px;
+            }
+            .play-icon {
+                border-top: 12px solid transparent;
+                border-bottom: 12px solid transparent;
+                border-left: 20px solid white;
+            }
+            .cta-button {
+                max-width: 100%;
+                font-size: 16px;
+                padding: 18px 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 22px;
+                margin-bottom: 12px;
+            }
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+            .video-container {
+                margin-bottom: 24px;
+                border-radius: 10px;
+            }
+            .play-button {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Linha de Progresso no Topo -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="topProgress"></div>
+    </div>
+
+    <!-- Cabeçalho / Logo -->
+    <header>
+        <div class="logo">
+            <!-- Logo removida conforme solicitado -->
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main>
+        <!-- Título -->
+        <h1>A Nova Era do <span class="gold-text">Caminho Digital Master</span></h1>
+        
+        <!-- Subtítulo -->
+        <p class="subtitle">Sua experiência foi completamente reformulada. Assista ao vídeo curto abaixo para conhecer toda a nossa nova estrutura e entender como liberar o seu acesso.</p>
+
+        <!-- Área do Vídeo (VSL) -->
+        <div class="video-container">
+            <!-- Thumbnail / Mockup visual do vídeo -->
+            <div class="video-thumbnail">
+                <div class="video-overlay">
+                    <div class="play-button" aria-label="Reproduzir vídeo">
+                        <div class="play-icon"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controles do Vídeo -->
+            <div class="video-controls">
+                <!-- Ícone Play -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" class="control-icon">
+                    <path d="M8 5V19L19 12L8 5Z" />
+                </svg>
+                
+                <!-- Ícone Volume -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" class="control-icon">
+                    <path d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.78 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z" />
+                </svg>
+
+                <span class="control-time">00:00</span>
+
+                <!-- Barra de progresso do vídeo (mockup) -->
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <!-- Ícone Engrenagem (Config) -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white" class="control-icon">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+                </svg>
+
+                <!-- Ícone Tela Cheia -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white" class="control-icon">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Botão WhatsApp Direto -->
+        <div id="whatsappContainer" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <p class="pre-button-text">Toque no botão abaixo para liberar seu acesso via WhatsApp:</p>
+            
+            <!-- Link da API do WhatsApp. 
+                 IMPORTANTE: Substitua o '55SEUNUMERO' pelo número de telefone real! -->
+            <a href="https://wa.me/5571983866082?text=Olá,%20quero%20solicitar%20meu%20acesso%20à%20nova%20área%20de%20membros.%0A%0ANome%20completo:%0A%0AE-mail%20para%20acesso:" 
+               target="_blank" 
+               class="cta-button" 
+               style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+                <!-- Ícone do WhatsApp -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink: 0; display: block; z-index: 2;">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.791.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                </svg>
+                Liberar Acesso via WhatsApp
+            </a>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+        © 2026 - Criado via inlead.digital | Central de anúncios
+    </footer>
+
+    <!-- Lógica da página -->
+    <script>
+        // Simulação da barra de progresso inicial
+        setTimeout(() => {
+            const progressBar = document.getElementById('topProgress');
+            if(progressBar) {
+                progressBar.style.width = '35%';
+            }
+        }, 500);
+
+    </script>
+</body>
+</html>
